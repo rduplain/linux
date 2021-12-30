@@ -401,7 +401,7 @@ static void rockchip_ebc_refresh(struct rockchip_ebc *ebc,
 		DRM_DEV_ERROR(dev, "Failed to get LUT: %d\n", ret);
 
 	global_count = global_refresh ? ebc->wf.frame_num : 0;
-	DRM_DEV_DEBUG_DRIVER(dev, "Starting refresh: global=%d mode=%d temp=%d -> frames=%d\n",
+	dev_info(dev, "Starting refresh: global=%d mode=%d temp=%d -> frames=%d\n",
 			     global_refresh, refresh_mode, ebc->temperature, ebc->wf.frame_num);
 
 	ret = pm_runtime_resume_and_get(dev);
@@ -435,7 +435,7 @@ static void rockchip_ebc_refresh(struct rockchip_ebc *ebc,
 	pm_runtime_mark_last_busy(dev);
 	pm_runtime_put_autosuspend(dev);
 
-	DRM_DEV_DEBUG_DRIVER(dev, "Finished refresh: frames=%d\n", frames);
+	dev_info(dev, "Finished refresh: frames=%d\n", frames);
 }
 
 static void rockchip_ebc_refresh_work(struct work_struct *work)
@@ -541,7 +541,7 @@ static void rockchip_ebc_enable(struct drm_simple_display_pipe *pipe,
 	struct device *dev = ebc->drm.dev;
 	int ret;
 
-	DRM_DEV_DEBUG_DRIVER(dev, "CRTC enable...\n");
+	dev_info(dev, "CRTC enable...\n");
 
 	ret = clk_set_rate(ebc->dclk, panel->sdck * ((panel->panel_16bit ? 7 : 3) + 1));
 	if (ret)
@@ -561,7 +561,7 @@ static void rockchip_ebc_disable(struct drm_simple_display_pipe *pipe)
 	struct rockchip_ebc *ebc = pipe_to_ebc(pipe);
 	struct device *dev = ebc->drm.dev;
 
-	DRM_DEV_DEBUG_DRIVER(dev, "CRTC disable...\n");
+	dev_info(dev, "CRTC disable...\n");
 
 	flush_work(&ebc->refresh_work);
 	ebc->panel_state = EBC_PANEL_OFF;
@@ -617,7 +617,7 @@ static void rockchip_ebc_update(struct drm_simple_display_pipe *pipe,
 		return;
 
 	obj = drm_gem_fb_get_obj(fb, 0);
-	ret = drm_gem_shmem_vmap(obj, &map);
+	ret = drm_gem_shmem_vmap(to_drm_gem_shmem_obj(obj), &map);
 	if (ret) {
 		DRM_DEV_ERROR(dev, "Failed to map FB shmem: %d\n", ret);
 		return;
@@ -632,7 +632,7 @@ static void rockchip_ebc_update(struct drm_simple_display_pipe *pipe,
 	if (need_refresh && ebc->panel_state == EBC_PANEL_ON)
 		queue_work(system_long_wq, &ebc->refresh_work);
 
-	drm_gem_shmem_vunmap(obj, &map);
+	drm_gem_shmem_vunmap(to_drm_gem_shmem_obj(obj), &map);
 }
 
 static const struct drm_simple_display_pipe_funcs rockchip_ebc_pipe_funcs = {
@@ -717,7 +717,7 @@ static int rockchip_ebc_runtime_suspend(struct device *dev)
 {
 	struct rockchip_ebc *ebc = dev_get_drvdata(dev);
 
-	DRM_DEV_DEBUG_DRIVER(dev, "Suspending...\n");
+	dev_info(dev, "Suspending...\n");
 
 	/* Ensure frame start is not set, and drive the output pins low. */
 	ebc_update_bits(ebc, EBC_DSP_START,
@@ -741,7 +741,7 @@ static int rockchip_ebc_runtime_resume(struct device *dev)
 	struct rockchip_ebc *ebc = dev_get_drvdata(dev);
 	int ret;
 
-	DRM_DEV_DEBUG_DRIVER(dev, "Resuming...\n");
+	dev_info(dev, "Resuming...\n");
 
 	ret = regulator_bulk_enable(EBC_NUM_SUPPLIES, ebc->supplies);
 	if (ret)
