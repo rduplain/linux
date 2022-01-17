@@ -214,7 +214,8 @@ static int wusb3801_hw_init(struct wusb3801 *wusb3801)
 	return regmap_write(wusb3801->regmap, WUSB3801_REG_CTRL0,
 			    wusb3801_map_try_role(wusb3801->cap.prefer_role) |
 			    wusb3801_map_pwr_opmode(wusb3801->pwr_opmode) |
-			    wusb3801_map_port_type(wusb3801->port_type));
+			    wusb3801_map_port_type(wusb3801->port_type) |
+			    WUSB3801_CTRL0_INT_MASK);
 }
 
 static void wusb3801_hw_update(struct wusb3801 *wusb3801)
