@@ -832,8 +832,10 @@ static int rockchip_ebc_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	ret = request_firmware(&fw, "waveform.bin", dev);
-	if (ret)
+	if (ret) {
+		dev_err(dev, "Failed to load waveform.bin: %d\n", ret);
 		return ret;
+	}
 
 	ret = devm_add_action_or_reset(dev, rockchip_ebc_release_firmware,
 				       (void *)fw);
