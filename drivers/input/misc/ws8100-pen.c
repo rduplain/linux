@@ -8,6 +8,7 @@
 #define DEBUG
 #include <linux/delay.h>
 #include <linux/input.h>
+#include <linux/interrupt.h>
 #include <linux/module.h>
 #include <linux/pm.h>
 #include <linux/spi/spi.h>
