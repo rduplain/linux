@@ -298,6 +298,26 @@
 };
 
 &ebc {
+	panel,width = <1872>;
+	panel,height = <1404>;
+	panel,vir_width = <1872>;
+	panel,vir_height = <1404>;
+	panel,sdck = <33300000>;
+	panel,lsl = <11>;
+	panel,lbl = <8>;
+	panel,ldl = <234>;
+	panel,lel = <23>;
+	panel,gdck-sta = <10>;
+	panel,lgonl = <215>;
+	panel,fsl = <1>;
+	panel,fbl = <4>;
+	panel,fdl = <1404>;
+	panel,fel = <12>;
+	panel,mirror = <1>;
+	panel,panel_16bit = <1>;
+	panel,panel_color = <0>;
+	panel,width-mm = <157>;
+	panel,height-mm = <210>;
 	io-channels = <&ebc_pmic 0>;
 	panel-supply = <&v3p3>;
 	vcom-supply = <&vcom>;
@@ -355,6 +375,13 @@
 		vcc7-supply = <&vcc_sys>;
 		vcc8-supply = <&vcc_sys>;
 		vcc9-supply = <&dcdc_boost>;
+
+		battery {
+			monitored-battery = <&battery_cell>;
+			rockchip,resistor-sense-micro-ohms = <10000>;
+			rockchip,sleep-enter-current-microamp = <150000>;
+			rockchip,sleep-filter-current-microamp = <100000>;
+		};
 
 		regulators {
 			vdd_logic: DCDC_REG1 {
@@ -596,6 +623,47 @@
 						remote-endpoint = <&usb2phy0_typec_hs>;
 					};
 				};
+			};
+		};
+	};
+
+	ebc_pmic: pmic@68 {
+		compatible = "ti,tps65185";
+		reg = <0x68>;
+		interrupt-parent = <&gpio3>;
+		interrupts = <RK_PA6 IRQ_TYPE_LEVEL_LOW>;
+		#io-channel-cells = <1>;
+		pinctrl-0 = <&ebc_pmic_pins>;
+		pinctrl-names = "default";
+		powerup-gpios = <&gpio3 RK_PB0 GPIO_ACTIVE_HIGH>;
+		pwr_good-gpios = <&gpio3 RK_PA7 GPIO_ACTIVE_HIGH>;
+		vcom_ctrl-gpios = <&gpio4 RK_PB2 GPIO_ACTIVE_HIGH>;
+		vin-supply = <&vcc_bat>;
+		vin3p3-supply = <&vcc_3v3>;
+		wakeup-gpios = <&gpio3 RK_PA5 GPIO_ACTIVE_HIGH>;
+		ti,up-sequence = <1>, <0>, <2>, <3>;
+		ti,up-delay-ms = <3>, <3>, <3>, <3>;
+		ti,down-sequence = <2>, <3>, <1>, <0>;
+		ti,down-delay-ms = <3>, <6>, <6>, <6>;
+
+		regulators {
+			v3p3: v3p3 {
+				regulator-name = "v3p3";
+				regulator-always-on;
+				regulator-min-microvolt = <3300000>;
+				regulator-max-microvolt = <3300000>;
+			};
+
+			vcom: vcom {
+				regulator-name = "vcom";
+				regulator-min-microvolt = <1450000>;
+				regulator-max-microvolt = <1450000>;
+			};
+
+			vdrive: vdrive {
+				regulator-name = "vdrive";
+				regulator-min-microvolt = <15000000>;
+				regulator-max-microvolt = <15000000>;
 			};
 		};
 	};
