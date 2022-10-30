@@ -610,7 +610,7 @@ static void rockchip_ebc_update(struct drm_simple_display_pipe *pipe,
 	struct device *dev = ebc->drm.dev;
 	struct drm_gem_object *obj;
 	bool need_refresh = false;
-	struct dma_buf_map map;
+	struct iosys_map map;
 	struct drm_rect clip;
 	int ret;
 
