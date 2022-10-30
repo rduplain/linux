@@ -330,6 +330,7 @@
 
 		regulator-state-mem {
 			regulator-off-in-suspend;
+			regulator-suspend-microvolt = <900000>;
 		};
 	};
 
@@ -544,6 +545,10 @@
 };
 
 &i2s0_8ch {
+	status = "okay";
+};
+
+&i2c3 {
 	status = "okay";
 };
 
